@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D4958713-07CE-4F11-B31A-6D7193892F15}"
+	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosts", "Hosts", "{10F691FF-13BD-4F3E-97C0-808CB855E1A7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Contract", "Contract", "{99AEE037-843D-4A75-B876-DD5931A38AF6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runtime", "Runtime", "{2017CE89-B839-437F-A194-4C322291AF94}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataProviders", "DataProviders", "{D676AE90-493E-4830-B974-56EB53BC5728}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveWebServer.Contract", "Contract\ReactiveWebServer.Contract\ReactiveWebServer.Contract.csproj", "{E131D0F2-8DEF-425A-B28D-99D4202FDF6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuestBook.Contract", "Contract\GuestBook.Contract\GuestBook.Contract.csproj", "{5CCBEA37-85F4-444B-B408-FE8E55CA0759}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuestBookXmlProvider", "DataProviders\GuestBookXmlProvider\GuestBookXmlProvider.csproj", "{857EC3BD-3872-4499-ABF6-52376B078852}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GusetBookSqlLiteProvider", "DataProviders\GusetBookSqlLiteProvider\GusetBookSqlLiteProvider.csproj", "{71B9B2D0-7C9F-4571-81D1-2206C9F06133}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveWebServer.Runtime", "Runtime\ReactiveWebServer.Runtime\ReactiveWebServer.Runtime.csproj", "{965E0AB7-1404-4D99-B150-59440E02D1FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveWebServer.ConsoleHost", "Hosts\ReactiveWebServer.ConsoleHost\ReactiveWebServer.ConsoleHost.csproj", "{98D55FD2-4E53-4572-BF46-00F5E8676A6E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E131D0F2-8DEF-425A-B28D-99D4202FDF6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E131D0F2-8DEF-425A-B28D-99D4202FDF6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E131D0F2-8DEF-425A-B28D-99D4202FDF6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E131D0F2-8DEF-425A-B28D-99D4202FDF6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CCBEA37-85F4-444B-B408-FE8E55CA0759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CCBEA37-85F4-444B-B408-FE8E55CA0759}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CCBEA37-85F4-444B-B408-FE8E55CA0759}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CCBEA37-85F4-444B-B408-FE8E55CA0759}.Release|Any CPU.Build.0 = Release|Any CPU
+		{857EC3BD-3872-4499-ABF6-52376B078852}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{857EC3BD-3872-4499-ABF6-52376B078852}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{857EC3BD-3872-4499-ABF6-52376B078852}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{857EC3BD-3872-4499-ABF6-52376B078852}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71B9B2D0-7C9F-4571-81D1-2206C9F06133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71B9B2D0-7C9F-4571-81D1-2206C9F06133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71B9B2D0-7C9F-4571-81D1-2206C9F06133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71B9B2D0-7C9F-4571-81D1-2206C9F06133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{965E0AB7-1404-4D99-B150-59440E02D1FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{965E0AB7-1404-4D99-B150-59440E02D1FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{965E0AB7-1404-4D99-B150-59440E02D1FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{965E0AB7-1404-4D99-B150-59440E02D1FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98D55FD2-4E53-4572-BF46-00F5E8676A6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98D55FD2-4E53-4572-BF46-00F5E8676A6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98D55FD2-4E53-4572-BF46-00F5E8676A6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98D55FD2-4E53-4572-BF46-00F5E8676A6E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E131D0F2-8DEF-425A-B28D-99D4202FDF6D} = {99AEE037-843D-4A75-B876-DD5931A38AF6}
+		{5CCBEA37-85F4-444B-B408-FE8E55CA0759} = {99AEE037-843D-4A75-B876-DD5931A38AF6}
+		{857EC3BD-3872-4499-ABF6-52376B078852} = {D676AE90-493E-4830-B974-56EB53BC5728}
+		{71B9B2D0-7C9F-4571-81D1-2206C9F06133} = {D676AE90-493E-4830-B974-56EB53BC5728}
+		{965E0AB7-1404-4D99-B150-59440E02D1FE} = {2017CE89-B839-437F-A194-4C322291AF94}
+		{98D55FD2-4E53-4572-BF46-00F5E8676A6E} = {10F691FF-13BD-4F3E-97C0-808CB855E1A7}
+	EndGlobalSection
+EndGlobal
