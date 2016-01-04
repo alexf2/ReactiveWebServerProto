@@ -21,10 +21,12 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
         //http://stackoverflow.com/questions/12694613/resource-locking-with-async-await
         AsyncLock _docLock = new AsyncLock();
 
-        public GuestBookXmlProvider(string filePath)
+        public GuestBookXmlProvider (string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentException("The constructor parameter '{nameof(filePath)}' is empty");
+
+            filePath = Path.GetFullPath(filePath);
 
             var path = Path.GetDirectoryName(filePath);
             if (!Directory.Exists(path))
@@ -35,38 +37,38 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         public async Task<UserMessage> AddMessage(string userLogin, string text)
         {
-            using (await _docLock.LockAsync())
+            using (await _docLock.LockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
                 var user = GetUserNode(doc, userLogin);
 
-                var msg = new UserMessage() {UserLogin = userLogin, Text = text, Created = DateTimeOffset.Now};
+                var msg = new UserMessage() {UserLogin = userLogin, Text = text, Created = DateTime.UtcNow};
                 
                 user.Add(Mapper.Map<XElement>(msg));
 
-                await SaveStorage(doc);
+                await SaveStorage(doc).ConfigureAwait(false);
                 return msg;
             }            
         }        
 
         public async Task Clear()
         {
-            using (await _docLock.LockAsync())
+            using (await _docLock.LockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
                 doc.Root.RemoveAll();
-                await SaveStorage(doc);
+                await SaveStorage(doc).ConfigureAwait(false);
             }
         }
 
-        public async Task<UserInfo> CreateUser(string userLogin, string displayName)
+        public async Task<UserInfo> AddUser(string userLogin, string displayName)
         {
-            using (await _docLock.LockAsync())
+            using (await _docLock.LockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
                 var user = (from u in doc.Root.Elements("user")
-                    where u.Attribute("login").Name == userLogin
+                    where u.Attribute("login").Value.Equals(userLogin, StringComparison.OrdinalIgnoreCase)
                     select u).FirstOrDefault();
 
                 if (user != null)
@@ -76,9 +78,11 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
                 {
                     UserLogin = userLogin,
                     DisplayName = displayName,
-                    Created = DateTimeOffset.Now
+                    Created = DateTime.UtcNow
                 };                
                 doc.Root.Add(Mapper.Map<XElement>(res));
+
+                await SaveStorage(doc).ConfigureAwait(false);
 
                 return res;
             }
@@ -86,17 +90,17 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         public async Task<DataPage<UserMessage>> GetUserMessages(string userLogin, int pageNumber, int pageSize)
         {
-            using (await _docLock.LockAsync())
+            using (await _docLock.LockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
                 var totalCount = (from u in doc.Root.Elements("user")
-                    where u.Attribute("login").Name == userLogin
-                    select u.Elements("message")).Count();
+                    where u.Attribute("login").Value.Equals(userLogin, StringComparison.OrdinalIgnoreCase)
+                                  select u.Elements("message")).Count();
 
                 var items = from u in doc.Root.Elements("user")
-                    where u.Attribute("login").Name == userLogin
-                    select u.Elements("message");
+                    where u.Attribute("login").Value.Equals(userLogin, StringComparison.OrdinalIgnoreCase)
+                            select u.Elements("message");
 
                 if (pageSize != -1)
                     items = items.Skip((pageNumber - 1) * pageSize).Take(pageSize);
@@ -107,7 +111,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         public async Task<DataPage<UserInfo>> GetUsers(int pageNumber, int pageSize)
         {
-            using (await _docLock.LockAsync())
+            using (await _docLock.LockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
@@ -125,18 +129,19 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         public async Task RemoveUser(string userLogin)
         {
-            using (await _docLock.LockAsync())
+            using (await _docLock.LockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
                 (from u in doc.Root.Elements("user")
-                 where u.Attribute("login").Name == userLogin
+                 where u.Attribute("login").Value.Equals(userLogin, StringComparison.OrdinalIgnoreCase)
                  select u).Remove();
 
-                await SaveStorage(doc);
+                await SaveStorage(doc).ConfigureAwait(false);
             }            
         }
 
+        #region Storage
         async Task<XDocument> GetStorage()
         {
             if (_xdocRef != null)
@@ -156,39 +161,40 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
             {
                 string content;
                 using (var reader = File.OpenText(_filePath))
-                    content = await reader.ReadToEndAsync();
+                    content = await reader.ReadToEndAsync().ConfigureAwait(false);
 
                 return await Task<XDocument>.Factory.StartNew(() =>
                 {
                     var doc = XDocument.Parse(content);
                     _xdocRef = new WeakReference(doc);
                     return doc;
-                });
+                }).ConfigureAwait(false);
             }
         }
 
         XDocument CreateEmptyDoc()
         {
-            return new XDocument(new XElement("users", new XAttribute("created", DateTimeOffset.Now)));
+            return new XDocument(new XElement("users", new XAttribute("created", DateTime.UtcNow)));
         }
 
         async Task SaveStorage (XDocument doc)
         {
             using (var writer = XmlWriter.Create(_filePath, new XmlWriterSettings() {Indent = true, Encoding = Encoding.UTF8, CloseOutput = true}))
             {
-                await Task.Factory.StartNew(() => doc.WriteTo(writer) );                
+                await Task.Factory.StartNew(() => doc.WriteTo(writer) ).ConfigureAwait(false);                
             }
         }
+        #endregion Storage
 
         XElement GetUserNode(XDocument doc, string login)
         {
             var el = (from u in doc.Root.Elements("user")
-                      where u.Attribute("login").Name == login
+                      where u.Attribute("login").Value.Equals(login, StringComparison.OrdinalIgnoreCase)
                       select u).FirstOrDefault();
 
             if (el == null)
             {
-                el = new XElement("user", new XAttribute("login", login), new XAttribute("created", DateTimeOffset.Now));
+                el = new XElement("user", new XAttribute("login", login), new XAttribute("created", DateTime.UtcNow));
                 doc.Root.Add(el);
             }
             return el;

@@ -79,6 +79,10 @@
       <Project>{E131D0F2-8DEF-425A-B28D-99D4202FDF6D}</Project>
       <Name>ReactiveWebServer.Contract</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\DataProviders\GuestBookXmlProvider\GuestBookXmlProvider.csproj">
+      <Project>{857EC3BD-3872-4499-ABF6-52376B078852}</Project>
+      <Name>GuestBookXmlProvider</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

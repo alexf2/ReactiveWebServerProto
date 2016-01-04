@@ -17,8 +17,11 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
-                Component.For<IGuestBookDataProvider>().ImplementedBy(Type.GetType(ConfigurationManager.AppSettings["data-provider"])),
+                Component.For<IGuestBookDataProvider>().ImplementedBy(Type.GetType(ConfigurationManager.AppSettings["data-provider"]))
+                    .DependsOn(Dependency.OnAppSettingsValue("filePath", "storage-file")),
+
                 Component.For<IExecutionContext>().ImplementedBy<ConsoleAppExecutionContext>(),
+
                 Component.For<LoggersManager>().DependsOn(Dependency.OnAppSettingsValue("level", "logging-level"))
             );
         }

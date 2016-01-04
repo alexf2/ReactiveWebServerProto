@@ -6,6 +6,6 @@ namespace AnywayAnyday.GuestBook.Contract.DTO
     {
         public string UserLogin { get; set; }
         public string Text { get; set; }
-        public DateTimeOffset Created { get; set; }
+        public DateTime Created { get; set; }
     }
 }
