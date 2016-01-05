@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using AnywayAnyday.GuestBook.Contract;
 using AnywayAnyday.GuestBook.Contract.DTO;
 using Nito.AsyncEx;
 using AutoMapper;
+using Castle.Core.Logging;
 
 namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 {
@@ -16,12 +18,14 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
     {
         readonly string _filePath;
         volatile WeakReference _xdocRef;
+        readonly ILogger _logger;
+        bool _stgCreated;
 
         //http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266988.aspx
         //http://stackoverflow.com/questions/12694613/resource-locking-with-async-await
         AsyncLock _docLock = new AsyncLock();
 
-        public GuestBookXmlProvider (string filePath)
+        public GuestBookXmlProvider (string filePath, ILogger logger)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentException("The constructor parameter '{nameof(filePath)}' is empty");
@@ -33,14 +37,16 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
                 throw new ArgumentException("The path '{path}' does not exist");
 
             _filePath = filePath;
+            _logger = logger;
         }
+
 
         public async Task<UserMessage> AddMessage(string userLogin, string text)
         {
             using (await _docLock.LockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
-                var user = GetUserNode(doc, userLogin);
+                var user = GetUserNode(doc, userLogin, true);
 
                 var msg = new UserMessage() {UserLogin = userLogin, Text = text, Created = DateTime.UtcNow};
                 
@@ -67,10 +73,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
             {
                 var doc = await GetStorage();
 
-                var user = (from u in doc.Root.Elements("user")
-                    where u.Attribute("login").Value.Equals(userLogin, StringComparison.OrdinalIgnoreCase)
-                    select u).FirstOrDefault();
-
+                var user = GetUserNode(doc, userLogin);
                 if (user != null)
                     throw new Exception($"The user '{userLogin}' already exists");
 
@@ -90,17 +93,20 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         public async Task<DataPage<UserMessage>> GetUserMessages(string userLogin, int pageNumber, int pageSize)
         {
+            ValidatePagination(pageNumber, pageSize);
             using (await _docLock.LockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
-                var totalCount = (from u in doc.Root.Elements("user")
-                    where u.Attribute("login").Value.Equals(userLogin, StringComparison.OrdinalIgnoreCase)
-                                  select u.Elements("message")).Count();
+                var usr = GetUserNode(doc, userLogin);
+                if (userLogin == null)
+                    return new DataPage<UserMessage>(pageNumber, pageSize, 0, null); //not found
 
-                var items = from u in doc.Root.Elements("user")
-                    where u.Attribute("login").Value.Equals(userLogin, StringComparison.OrdinalIgnoreCase)
-                            select u.Elements("message");
+                var totalCount = usr.Elements("message").Count();
+
+                IEnumerable<XElement> items = from m in usr.Elements("message")
+                            orderby  m.Attribute("created").Value
+                            select m;
 
                 if (pageSize != -1)
                     items = items.Skip((pageNumber - 1) * pageSize).Take(pageSize);
@@ -111,13 +117,15 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         public async Task<DataPage<UserInfo>> GetUsers(int pageNumber, int pageSize)
         {
+            ValidatePagination(pageNumber, pageSize);
             using (await _docLock.LockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
-                var totalCount = (from u in doc.Root.Elements("user") select u).Count();
+                var totalCount = doc.Root.Elements("user").Count();
 
-                var items = from u in doc.Root.Elements("user")                            
+                IEnumerable<XElement> items = from u in doc.Root.Elements("user")                            
+                            orderby u.Attribute("login").Value
                             select u;
 
                 if (pageSize != -1)
@@ -133,9 +141,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
             {
                 var doc = await GetStorage();
 
-                (from u in doc.Root.Elements("user")
-                 where u.Attribute("login").Value.Equals(userLogin, StringComparison.OrdinalIgnoreCase)
-                 select u).Remove();
+                GetUserNode(doc, userLogin)?.Remove();                
 
                 await SaveStorage(doc).ConfigureAwait(false);
             }            
@@ -155,6 +161,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
             {
                 XDocument res;
                 _xdocRef = new WeakReference(res = CreateEmptyDoc());
+                _stgCreated = true;                
                 return res;
             }
             else
@@ -183,21 +190,34 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
             {
                 await Task.Factory.StartNew(() => doc.WriteTo(writer) ).ConfigureAwait(false);                
             }
+            if (_stgCreated)
+            {
+                _stgCreated = false;
+                _logger.Info($"Created XML storage: {_filePath}");
+            }
         }
         #endregion Storage
 
-        XElement GetUserNode(XDocument doc, string login)
+        XElement GetUserNode(XDocument doc, string login, bool autoCreate = false)
         {
             var el = (from u in doc.Root.Elements("user")
                       where u.Attribute("login").Value.Equals(login, StringComparison.OrdinalIgnoreCase)
                       select u).FirstOrDefault();
 
-            if (el == null)
+            if (autoCreate && el == null)
             {
                 el = new XElement("user", new XAttribute("login", login), new XAttribute("created", DateTime.UtcNow));
                 doc.Root.Add(el);
             }
             return el;
-        }        
+        }
+
+        static void ValidatePagination(int pageNumber, int pageSize)
+        {
+            if (pageNumber < 1)
+                throw new Exception("Page number should be 1 or greater");
+            if (pageSize < -1)
+                throw new Exception("Page size should be positive or -1, to return all records");
+        }
     }
 }

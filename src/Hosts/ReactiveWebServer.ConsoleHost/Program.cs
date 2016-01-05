@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Configuration;
 using System.Threading.Tasks;
 using AnywayAnyday.DataProviders.GuestBookXmlProvider;
 using AnywayAnyday.GuestBook.Contract;
@@ -9,6 +7,7 @@ using AnywayAnyday.ReactiveWebServer.Contract;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using Castle.Core.Logging;
+using Configuration = Castle.Windsor.Installer.Configuration;
 
 namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
 {
@@ -39,14 +38,14 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
                         if (e is TaskCanceledException)
                             _logger.Info(e.Message);
                         else
-                            _logger.Error("At application Main (agg):", e);
+                            CustomLogException("At application Main (agg):", e);                            
                         return true;
                     });
                 }
                 catch (Exception ex)
                 {
-                    Environment.ExitCode = GenericException;
-                    _logger.Error("At application Main:", ex);
+                    Environment.ExitCode = GenericException;                    
+                    CustomLogException("At application Main:", ex);
                 }
             }
 
@@ -74,8 +73,18 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
                     stg.AddMessage("user2", "Test msg 2"),
                     stg.AddMessage("user2", "Test msg 3"),
                     stg.AddMessage("user1", "Test msg 11"),
-                    stg.AddMessage("user1", "Test msg 21")
-                });                
+                    stg.AddMessage("user1", "Test msg 21"),
+
+                    stg.AddMessage("user3", "Test msg 31")
+                });
+
+                var users = stg.GetUsers(1, 5).Result;
+                foreach (var u in users.Items)
+                    _logger.Info($"{u.UserLogin} - {u.DisplayName}");
+
+                var messages = stg.GetUserMessages("user2", 1, 5).Result;
+                foreach (var m in messages.Items)
+                    _logger.Info($"{m.Text} - {m.Created}");
             }
             finally
             {
@@ -89,6 +98,24 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
             var container = new WindsorContainer();            
             container.Install(Configuration.FromAppConfig(), FromAssembly.This(), FromAssembly.Containing<GuestBookXmlProvider>());
             return container;
+        }
+
+        static void CustomLogException(string msg, Exception ex)
+        {
+            if (NeedsLogInnerExc)
+                _logger.Error($"{msg} {ex.ToString()}");
+            else
+                _logger.Error(msg, ex);
+        }
+
+        static bool NeedsLogInnerExc
+        {
+            get
+            {
+                bool need = false;
+                bool.TryParse(ConfigurationManager.AppSettings["log-inner-exception"], out need);
+                return need;
+            }
         }
     }
 }
