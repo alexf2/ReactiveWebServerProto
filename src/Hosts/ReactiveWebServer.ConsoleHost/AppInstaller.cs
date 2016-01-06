@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AnywayAnyday.GuestBook.Contract;
+using AnywayAnyday.HttpRequestHandlers.Runtime;
 using AnywayAnyday.ReactiveWebServer.Contract;
+using AnywayAnyday.ReactiveWebServer.Runtime;
 using Castle.Core.Logging;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
@@ -20,18 +18,64 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
         {
             container.Register(
                 Component.For<IGuestBookDataProvider>().ImplementedBy(Type.GetType(ConfigurationManager.AppSettings["data-provider"]))                                
-                    .DependsOn( Dependency.OnAppSettingsValue("filePath", "storage-file"))
+                    .DependsOn(Dependency.OnAppSettingsValue("filePath", "storage-file"))
                     .DependsOn(Dependency.OnValue("connectionString", ConfigurationManager.ConnectionStrings["DefaultSqlStorage"].ConnectionString))
-                    .DependsOn(Dependency.OnComponent(typeof(ILogger), LoggersManager.DalLoggerInst)),
-
+                    .DynamicParameters((kernel, dic) =>
+                    {
+                        dic["logger"] = kernel.Resolve<LoggersManager>().DalLogger;
+                    }),
+                    
                 Component.For<IExecutionContext>().ImplementedBy<ConsoleAppExecutionContext>(),
 
                 Component.For<LoggersManager>().DependsOn(Dependency.OnAppSettingsValue("level", "logging-level")),
 
                 Component.For<ILogger>().UsingFactoryMethod((IKernel k) => k.Resolve<LoggersManager>().AppLogger).Named(LoggersManager.AppLoggerInst),
                 Component.For<ILogger>().UsingFactoryMethod((IKernel k) => k.Resolve<LoggersManager>().WebServerLogger).Named(LoggersManager.WebServerLoggerInst),
-                Component.For<ILogger>().UsingFactoryMethod((IKernel k) => k.Resolve<LoggersManager>().DalLogger).Named(LoggersManager.DalLoggerInst)
+                Component.For<ILogger>().UsingFactoryMethod((IKernel k) => k.Resolve<LoggersManager>().DalLogger).Named(LoggersManager.DalLoggerInst),
+
+
+                Component.For<IHttpListenerObservableFactory>().ImplementedBy<HttpListenerObservableFactory>(),
+
+                Component.For<IHttpServerOptions>().Instance(new HttpServerOptions() { Endpoints = new [] { ConstructEndpoint() }}),
+
+                Classes.FromAssemblyContaining<ServiceHostBase>()
+                    .BasedOn<ServiceHostBase>()
+                        .WithService.FirstInterface().Configure((r) => r.DynamicParameters((kernel, dic) =>
+                        {
+                            dic["logger"] = kernel.Resolve<LoggersManager>().WebServerLogger;
+                        })),
+
+                Classes.FromAssemblyContaining<HelloWorldHandler>()    
+                    .BasedOn<IHttpRequestHandler>()
+                    .WithService.FirstInterface().Configure((r) => r.DynamicParameters((kernel, dic) =>
+                    {
+                        dic["logger"] = kernel.Resolve<LoggersManager>().HandlerLogger;
+                    }))
             );
+        }
+
+        static Endpoint ConstructEndpoint()
+        {
+            var portRaw = ConfigurationManager.AppSettings["port"];
+            int p;
+            if (!int.TryParse(portRaw, out p))
+                throw new ArgumentException($"Can't parse app.config appsettings Port: '{portRaw}'");
+
+            var host = ConfigurationManager.AppSettings["host"]?.Trim()?.ToLower();
+            switch (host)
+            {
+                case "*":
+                    return Endpoint.AllHttpWeak(p);
+
+                case "+":
+                    return Endpoint.AllHttpStrong(p);
+
+                case "localhost":
+                    return Endpoint.HttpLocal(p);
+
+                default:
+                    return new Endpoint() {HostName = host, Port = p, Protocol = "http"};
+            }
         }
     }
 }

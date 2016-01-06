@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveWebServer.Runtime",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveWebServer.ConsoleHost", "Hosts\ReactiveWebServer.ConsoleHost\ReactiveWebServer.ConsoleHost.csproj", "{98D55FD2-4E53-4572-BF46-00F5E8676A6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpRequestHandlers.Runtime", "Runtime\HttpRequestHandlers\HttpRequestHandlers.Runtime.csproj", "{478DD210-046A-4E1D-9EFC-09CEBFBFD9C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{98D55FD2-4E53-4572-BF46-00F5E8676A6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98D55FD2-4E53-4572-BF46-00F5E8676A6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98D55FD2-4E53-4572-BF46-00F5E8676A6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{478DD210-046A-4E1D-9EFC-09CEBFBFD9C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{478DD210-046A-4E1D-9EFC-09CEBFBFD9C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{478DD210-046A-4E1D-9EFC-09CEBFBFD9C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{478DD210-046A-4E1D-9EFC-09CEBFBFD9C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,5 +75,6 @@ Global
 		{71B9B2D0-7C9F-4571-81D1-2206C9F06133} = {D676AE90-493E-4830-B974-56EB53BC5728}
 		{965E0AB7-1404-4D99-B150-59440E02D1FE} = {2017CE89-B839-437F-A194-4C322291AF94}
 		{98D55FD2-4E53-4572-BF46-00F5E8676A6E} = {10F691FF-13BD-4F3E-97C0-808CB855E1A7}
+		{478DD210-046A-4E1D-9EFC-09CEBFBFD9C0} = {2017CE89-B839-437F-A194-4C322291AF94}
 	EndGlobalSection
 EndGlobal

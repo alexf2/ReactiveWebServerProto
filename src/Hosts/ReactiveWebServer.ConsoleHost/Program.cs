@@ -2,11 +2,11 @@
 using System.Configuration;
 using System.Threading.Tasks;
 using AnywayAnyday.DataProviders.GuestBookXmlProvider;
-using AnywayAnyday.GuestBook.Contract;
 using AnywayAnyday.ReactiveWebServer.Contract;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using Castle.Core.Logging;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Configuration = Castle.Windsor.Installer.Configuration;
 
 namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
@@ -47,10 +47,7 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
                     Environment.ExitCode = GenericException;                    
                     CustomLogException("At application Main:", ex);
                 }
-            }
-
-            Console.WriteLine("Press a key>");
-            Console.ReadLine();     
+            }            
         }
 
         static void ExecuteCompositionRoot (string[] args, IWindsorContainer container)
@@ -61,9 +58,18 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
             execContext.StartReading(); //starting keyboard control
             _logger.Info("Execution context started");
 
+            var server = container.Resolve<IWebServer>();
+
             try
             {
-                var stg = container.Resolve<IGuestBookDataProvider>();
+                server.Start();
+
+                Console.WriteLine("Press a key>");
+                Console.ReadLine();
+
+                server.Stop();
+
+                /*var stg = container.Resolve<IGuestBookDataProvider>();
 
                 Task.WaitAll(new Task[]
                 {
@@ -84,11 +90,14 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
 
                 var messages = stg.GetUserMessages("user2", 1, 5).Result;
                 foreach (var m in messages.Items)
-                    _logger.Info($"{m.Text} - {m.Created}");
+                    _logger.Info($"{m.Text} - {m.Created}");*/
             }
             finally
             {
                 _logger.Info("Final releasing");
+
+                container.Release(server);
+                execContext.CancelSource.Cancel();
                 container.Release(execContext);                 
             }         
         }
@@ -96,6 +105,7 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
         static IWindsorContainer ConfigureIoC()
         {
             var container = new WindsorContainer();            
+            container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
             container.Install(Configuration.FromAppConfig(), FromAssembly.This(), FromAssembly.Containing<GuestBookXmlProvider>());
             return container;
         }

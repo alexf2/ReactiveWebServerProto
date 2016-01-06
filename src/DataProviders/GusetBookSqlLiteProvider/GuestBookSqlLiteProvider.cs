@@ -32,20 +32,20 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
             var res = new UserMessage() {Text = text, UserLogin = userLogin, Created = DateTime.UtcNow};
             using (var conn = new SQLiteConnection(_connectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync().ConfigureAwait(false);
 
                 int count = await conn.ExecuteAsync(
                     "insert or ignore into [Message] (Text, Created, UserId) select @text as Text, @created as Created, UserId from [User] where [Login] = @userLogin",
-                        new {text, created = res.Created, userLogin});
+                        new {text, created = res.Created, userLogin}).ConfigureAwait(false);
                 if (count == 0)
                 {
                     int userId =
                         await
                             conn.ExecuteScalarAsync<int>(
                                 "insert into [User] (Login, Created) values(@userLogin, @created); SELECT last_insert_rowid() FROM [User]",
-                                new {userLogin, created = res.Created});
+                                new {userLogin, created = res.Created}).ConfigureAwait(false);
 
-                    await conn.ExecuteAsync("insert into [Message] (Text, Created, UserId) values(@text, @created, @userId)", new { text, created = res.Created, userId});
+                    await conn.ExecuteAsync("insert into [Message] (Text, Created, UserId) values(@text, @created, @userId)", new { text, created = res.Created, userId}).ConfigureAwait(false);
                 }
             }
             return res;
@@ -56,10 +56,10 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
             var res = new UserInfo() {UserLogin = userLogin, DisplayName = displayName, Created = DateTime.UtcNow};
             using (var conn = new SQLiteConnection(_connectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync().ConfigureAwait(false);
 
                 int count = await conn.ExecuteAsync("insert or ignore into [User] (Login, Display, Created) values(@userLogin, @displayName, @created)", 
-                    new {userLogin, displayName, created = res.Created });
+                    new {userLogin, displayName, created = res.Created }).ConfigureAwait(false);
 
                 if (count == 0)
                     throw new Exception($"The user '{userLogin}' already exists");
@@ -71,8 +71,8 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
-                await conn.OpenAsync();
-                await conn.ExecuteAsync("delete from [User]");
+                await conn.OpenAsync().ConfigureAwait(false);
+                await conn.ExecuteAsync("delete from [User]").ConfigureAwait(false);
             }
         }
 
@@ -81,9 +81,9 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
             ValidatePagination(pageNumber, pageSize);
             using (var conn = new SQLiteConnection(_connectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync().ConfigureAwait(false);
 
-                int count = await conn.ExecuteScalarAsync<int>("select count(*) from [Message] m join [User] u on m.UserId=u.UserId where u.Login = @userLogin", new {userLogin});
+                int count = await conn.ExecuteScalarAsync<int>("select count(*) from [Message] m join [User] u on m.UserId=u.UserId where u.Login = @userLogin", new {userLogin}).ConfigureAwait(false);
 
                 string q = "select u.Login as UserLogin, m.Text, m.Created from [Message] m join [User] u on m.UserId=u.UserId where u.Login = @userLogin order by m.Created";
                 object prms;
@@ -106,9 +106,9 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
             ValidatePagination(pageNumber, pageSize);
             using (var conn = new SQLiteConnection(_connectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync().ConfigureAwait(false);
 
-                int count = await conn.ExecuteScalarAsync<int>("select count(*) from [User]");
+                int count = await conn.ExecuteScalarAsync<int>("select count(*) from [User]").ConfigureAwait(false);
 
                 string q = "select [Login] as UserLogin, Display as DisplayName, Created from [User] order by [Login]";
                 object prms;
@@ -122,7 +122,7 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
 
                 return
                     new DataPage<UserInfo>(pageNumber, pageSize, count,
-                        (await conn.QueryAsync<UserInfo>(q, prms)).ToList());
+                        (await conn.QueryAsync<UserInfo>(q, prms).ConfigureAwait(false)).ToList());
             }
         }
 
@@ -130,8 +130,8 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
-                await conn.OpenAsync();
-                await conn.ExecuteAsync("delete from [User] where [Login] = @userLogin", new {userLogin});
+                await conn.OpenAsync().ConfigureAwait(false);
+                await conn.ExecuteAsync("delete from [User] where [Login] = @userLogin", new {userLogin}).ConfigureAwait(false);
             }
         }
 
