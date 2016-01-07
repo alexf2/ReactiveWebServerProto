@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
@@ -37,7 +38,7 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             response.SendChunked = false;
         }
 
-        public abstract void Execute();
+        public abstract Task Execute();
 
         public StatusCodes Status { get; set; }
 
@@ -56,7 +57,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         {
             var arr = Encoding.GetBytes(str);
             _contentSize += arr.Length;
-            _response.ContentLength64 = _contentSize;
+            if (!Response.SendChunked)
+                _response.ContentLength64 = _contentSize;
             _response.OutputStream.Write(arr, 0, arr.Length);
         }        
 

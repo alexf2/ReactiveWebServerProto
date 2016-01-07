@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
+﻿using System.Net;
 using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
@@ -15,7 +11,7 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             _msg = msg;
         }
 
-        public override void Execute()
+        public override async Task Execute()
         {            
             AddHeaders();
             Write(_msg);

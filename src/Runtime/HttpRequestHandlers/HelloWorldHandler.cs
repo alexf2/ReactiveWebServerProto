@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
+﻿using System.Net;
 using System.Threading.Tasks;
 using AnywayAnyday.ReactiveWebServer.Contract;
 using Castle.Core.Logging;
@@ -24,10 +20,10 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         
         public HandlerPriorityClass PriorityClass => HandlerPriorityClass.Fallback;
 
-        public bool HandleRequest (HttpListenerContext context)
+        public Task<bool> HandleRequest (HttpListenerContext context)
         {
             new TextResponse(context.Response, "Hello world!").Execute();
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

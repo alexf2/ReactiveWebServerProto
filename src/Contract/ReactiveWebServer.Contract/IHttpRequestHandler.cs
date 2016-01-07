@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 
 namespace AnywayAnyday.ReactiveWebServer.Contract
 {
@@ -13,6 +14,7 @@ namespace AnywayAnyday.ReactiveWebServer.Contract
         string DisplayName { get; }
         HandlerPriorityClass PriorityClass { get; }
         int Priority { get; }
-        bool HandleRequest(HttpListenerContext context);
+
+        Task<bool> HandleRequest(HttpListenerContext context);
     }    
 }

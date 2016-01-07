@@ -50,7 +50,7 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
                     .WithService.FirstInterface().Configure((r) => r.DynamicParameters((kernel, dic) =>
                     {
                         dic["logger"] = kernel.Resolve<LoggersManager>().HandlerLogger;
-                    }))
+                    })).LifestyleTransient()
             );
         }
 

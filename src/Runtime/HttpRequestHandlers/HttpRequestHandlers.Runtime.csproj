@@ -45,11 +45,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HelloWorldHandler.cs" />
+    <Compile Include="HtmlBaseHandler.cs" />
+    <Compile Include="HtmlResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResponseBase.cs" />
     <Compile Include="TextResponse.cs" />
+    <Compile Include="UserListHandler.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Contract\GuestBook.Contract\GuestBook.Contract.csproj">
+      <Project>{5CCBEA37-85F4-444B-B408-FE8E55CA0759}</Project>
+      <Name>GuestBook.Contract</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Contract\ReactiveWebServer.Contract\ReactiveWebServer.Contract.csproj">
       <Project>{E131D0F2-8DEF-425A-B28D-99D4202FDF6D}</Project>
       <Name>ReactiveWebServer.Contract</Name>

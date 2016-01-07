@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using AnywayAnyday.HttpRequestHandlers.Runtime;
 using AnywayAnyday.ReactiveWebServer.Contract;
 using Castle.Core.Logging;
@@ -50,7 +51,7 @@ namespace AnywayAnyday.ReactiveWebServer.Runtime
         protected override void InternalStart()
         {
             _listener.Start();
-            _listenerSubscription = _listener.Subscribe(handleRequest, handleListenerError, handleComplete);
+            _listenerSubscription = _listener.Subscribe(HandleRequest, HandleListenerError, HandleComplete);
         }
 
         protected override void InternalStop()
@@ -66,14 +67,14 @@ namespace AnywayAnyday.ReactiveWebServer.Runtime
         }
 
         #region Http request processing
-        void handleRequest (HttpListenerContext ctx)
+        async void HandleRequest (HttpListenerContext ctx)
         {
             LogRequest(ctx); 
             foreach (var handler in _handlers)
             {
                 try
                 {
-                    if (handler.HandleRequest(ctx))
+                    if (await handler.HandleRequest(ctx))
                     {
                         _logger.Info($"{handler.DisplayName} executed");
                         break;
@@ -84,7 +85,7 @@ namespace AnywayAnyday.ReactiveWebServer.Runtime
                     _logger.Error("At handling request: ", ex);
                     try
                     {
-                        (new TextResponse(ctx.Response, "<br/>Error at request handling: " + GetunfoldedError(ex))
+                        await (new TextResponse(ctx.Response, "<br/>Error at request handling: " + GetunfoldedError(ex))
                         {
                             Status = ResponseBase.StatusCodes.InternalServerError
                         }).Execute();
@@ -107,11 +108,11 @@ namespace AnywayAnyday.ReactiveWebServer.Runtime
 
             _logger.Info("Request processed");
         }
-        void handleListenerError(Exception ex)
+        void HandleListenerError(Exception ex)
         {            
             _logger.Error("HttpListener error: ", ex);
         }
-        void handleComplete()
+        void HandleComplete()
         {
             _logger.Info("WebServer: listening completted");
         }
