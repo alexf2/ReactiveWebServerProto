@@ -15,9 +15,9 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         {
             _logger = logger;
             _gbProvider = gbProvider;
-
+            
+            JsLinks.Add(BootStrapJs);
             CssLinks.Add(BootStrapCss);
-            JsLinks.Add(BootStrapJs);            
         }
 
         public string DisplayName => "DeletetHandler";
@@ -42,7 +42,10 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             if (count > 0)
                 rsp.Write($"<p>User '{HtmlResponse.HtmlEncode(rsp.PathArgs[0])}' deleted</p>");
             else
+            {
                 rsp.Write($"<p>User '{HtmlResponse.HtmlEncode(rsp.PathArgs[0])}' not found</p>");
+                rsp.Status = StatusCodes.BadRequest;
+            }
 
             rsp.Write("<div>");
         }

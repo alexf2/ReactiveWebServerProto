@@ -54,6 +54,7 @@
     <Compile Include="HtmlResponse.cs" />
     <Compile Include="IResponseContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProxyHandler.cs" />
     <Compile Include="ResponseContextBase.cs" />
     <Compile Include="TextResponse.cs" />
     <Compile Include="UserListHandler.cs" />

@@ -15,9 +15,9 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         {
             _logger = logger;
             _gbProvider = gbProvider;
-
+            
+            JsLinks.Add(BootStrapJs);
             CssLinks.Add(BootStrapCss);
-            JsLinks.Add(BootStrapJs);            
         }
 
         public string DisplayName => "ClearHandler";

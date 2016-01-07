@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using AnywayAnyday.GuestBook.Contract;
 using AnywayAnyday.ReactiveWebServer.Contract;
@@ -17,9 +18,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             _gbProvider = gbProvider;
 
             CssLinks.Add(BootStrapCss);
-            JsLinks.Add(BootStrapJs);
             JsLinks.Add(JqueryJs);
-            JsLinks.Add(KnockoutJs);
+            JsLinks.Add(BootStrapJs);                        
         }
 
         public string DisplayName => "AddUserHandler";
@@ -45,12 +45,17 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             p.TryGetValue("displayname", out dispName);
 
             if (string.IsNullOrEmpty(login))
-                rsp.Write("<p>User login should not be empty</p>");
+            {
+                rsp.Status = StatusCodes.BadRequest;
+                rsp.Write("<p>User login should not be empty</p>");                
+            }
             else
             {
                 var ui = await _gbProvider.AddUser(login, dispName);
-                rsp.Write($"<p>User '{ui.UserLogin}' created</p>");
-            }                        
+                rsp.Status = StatusCodes.Created;
+                rsp.AddLink(Path + "/" + WebUtility.UrlDecode(login));
+                rsp.Write($"<p>User '{ui.UserLogin}' created</p>");                
+            }
             rsp.Write("<div>");
         }
     }

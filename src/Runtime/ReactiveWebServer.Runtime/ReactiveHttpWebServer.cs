@@ -85,7 +85,7 @@ namespace AnywayAnyday.ReactiveWebServer.Runtime
                     _logger.Error("At handling request: ", ex);
                     try
                     {
-                        await (new TextResponse(ctx, "<br/>Error at request handling: " + GetunfoldedError(ex), true)
+                        await (new TextResponse(ctx, "<br/>Error at request handling: " + GetunfoldedError(ex))
                         {
                             Status = StatusCodes.InternalServerError
                         }).Execute();

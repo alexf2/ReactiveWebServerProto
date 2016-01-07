@@ -16,23 +16,42 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
 
         readonly Dictionary<string, string> _headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { {"Server", ServerString}, {"Cache-Control", "no-cache" } };
         readonly HttpListenerContext _ctx;
-        long _contentSize;
-        readonly IList<string> _pathArgs;
 
-        public ResponseContextBase(HttpListenerContext ctx, IList<string> pathArgs, bool keepRspMode = false)
+        readonly IList<string> _pathArgs;
+        MemoryStream _buffer = new MemoryStream();
+
+        protected ResponseContextBase(HttpListenerContext ctx, IList<string> pathArgs)
         {
-            Status = StatusCodes.Ok;
-            Encoding = Encoding.UTF8;
             _ctx = ctx;
-            _contentSize = ctx.Response.ContentLength64 < 0 ? 0: ctx.Response.ContentLength64;
-            if (!keepRspMode)
-                ctx.Response.SendChunked = false;
+            ctx.Response.SendChunked = false;
+            Encoding = Encoding.UTF8;                        
             _pathArgs = pathArgs;
         }
 
-        public abstract Task Execute();
+        public async Task Execute()
+        {
+            await InternalExecute();
+            if (_buffer.Length > 0)
+            {
+                _ctx.Response.ContentLength64 = _buffer.Length;
+                _ctx.Response.ContentEncoding = Encoding;
+                _buffer.Seek(0, SeekOrigin.Begin);
+                await _buffer.CopyToAsync(_ctx.Response.OutputStream);
+                _buffer.Dispose();
+                _buffer = null;
+            }
+        }
 
-        public StatusCodes Status { get; set; }
+        protected abstract Task InternalExecute();        
+
+        public StatusCodes Status {
+            get { return (StatusCodes)_ctx.Response.StatusCode;  }
+            set
+            {
+                _ctx.Response.StatusCode = (int)value;
+                _ctx.Response.StatusDescription = value.ToString();
+            }
+        }
 
         public Encoding Encoding { get; set; }
 
@@ -96,11 +115,14 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         public void Write(string str)
         {
             var arr = Encoding.GetBytes(str);
-            _contentSize += arr.Length;
-            if (!Response.SendChunked)
-                _ctx.Response.ContentLength64 = _contentSize;
-            _ctx.Response.OutputStream.Write(arr, 0, arr.Length);
-        }        
+            _buffer.Write(arr, 0, arr.Length);
+        }
+
+        public void AddLink(string relativePath)
+        {
+            var b = new UriBuilder(_ctx.Request.Url.Scheme, _ctx.Request.Url.Host, _ctx.Request.Url.Port, relativePath);            
+            _headers["Location"] = b.ToString();
+        }
 
         protected void AddHeaders()
         {
@@ -109,13 +131,10 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
 
             if (!_headers["Content-Type"].Contains("charset"))
                 _headers["Content-Type"] = _headers["Content-Type"] + $"; charset={Encoding.BodyName}";
-
-            //_headers["Content-Length"] = _contentSize.ToString(CultureInfo.InvariantCulture);
-            //_response.ContentLength64 = _contentSize;
-            //_response.ContentEncoding = Encoding;            
-
+            
             foreach (var kv in _headers)
                 _ctx.Response.AddHeader(kv.Key, kv.Value);
         }
+
     }
 }

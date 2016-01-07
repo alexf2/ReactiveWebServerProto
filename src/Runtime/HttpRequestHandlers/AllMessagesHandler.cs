@@ -18,9 +18,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             _gbProvider = gbProvider;
 
             CssLinks.Add(BootStrapCss);
-            JsLinks.Add(BootStrapJs);
             JsLinks.Add(JqueryJs);
-            JsLinks.Add(KnockoutJs);
+            JsLinks.Add(BootStrapJs);                        
         }
 
         public string DisplayName => "AllMessagesHandler";

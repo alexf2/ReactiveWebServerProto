@@ -18,9 +18,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             _gbProvider = gbProvider;
 
             CssLinks.Add(BootStrapCss);
-            JsLinks.Add(BootStrapJs);
             JsLinks.Add(JqueryJs);
-            JsLinks.Add(KnockoutJs);
+            JsLinks.Add(BootStrapJs);                        
         }
 
         public string DisplayName => "UserListHandler";        
@@ -42,15 +41,15 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
 
             var page = await _gbProvider.GetUsers(rsp.Page, rsp.Size).ConfigureAwait(false);
 
-            if (!page.Items.Any())
-                rsp.Write("<p>No users found</p>");
+            if (!page.Items.Any())            
+                rsp.Write("<p>No users found</p>");            
             else
-            {                
+            {
                 foreach (var u in page.Items)
                 {
                     rsp.Write($"<hr/><div class=\"row\" data-id=\"{HtmlResponse.HtmlEncode(u.UserLogin)}\">");
-                        rsp.Write($"<div class=\"col-md-1\"><b>{u.UserLogin}</b></div>");
-                        rsp.Write($"<div class=\"col-md-4\">{HtmlResponse.HtmlEncode(u.DisplayName)}</div>");
+                    rsp.Write($"<div class=\"col-md-1\"><b>{u.UserLogin}</b></div>");
+                    rsp.Write($"<div class=\"col-md-4\">{HtmlResponse.HtmlEncode(u.DisplayName)}</div>");
                     rsp.Write("</div>");
                 }
             }

@@ -15,13 +15,12 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         protected const string JqueryJs = "http://code.jquery.com/jquery-2.1.4.min.js";
         protected const string KnockoutJs = "http://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js";
 
-        protected static readonly string[] GetVerb = new[] {"GET"};
-        protected static readonly string[] PostVerb = new[] { "POST" };
-        protected static readonly string[] DeleteVerb = new[] { "DELETE" };
+        internal static readonly string[] GetVerb = new[] {"GET"};
+        internal static readonly string[] PostVerb = new[] { "POST" };
+        internal static readonly string[] DeleteVerb = new[] { "DELETE" };
 
         readonly Lazy<List<string>> _css = new Lazy<List<string>>(() => new List<string>());
-        readonly Lazy<List<string>> _js = new Lazy<List<string>>(() => new List<string>());
-        readonly List<string> _pathArgs = new List<string>();
+        readonly Lazy<List<string>> _js = new Lazy<List<string>>(() => new List<string>());        
 
         protected abstract Task RenderBody(IResponseContext rsp);
         protected abstract string Path { get; }
@@ -35,28 +34,35 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
 
         public async Task<bool> HandleRequest(HttpListenerContext context)
         {
-            if (!RequestMatch(context.Request))
+            List<string> pathArgs = new List<string>();
+            if (!RequestMatch(context.Request, pathArgs))
                 return false;
 
-            await new HtmlResponse(context, RenderBody, _css.IsValueCreated ? _css.Value:null, _js.IsValueCreated ? _js.Value : null, PageTitle, _pathArgs).Execute();
+            await new HtmlResponse(context, RenderBody, _css.IsValueCreated ? _css.Value:null, _js.IsValueCreated ? _js.Value : null, PageTitle, pathArgs).Execute();
 
             return true;
         }
 
-        protected virtual bool RequestMatch(HttpListenerRequest req)
+        #region Request matching
+        protected virtual bool RequestMatch(HttpListenerRequest req, IList<string> pathArgs)
+        {            
+            return IsRequestMatchHelper(req, Path, pathArgs, SupportedVerbs);
+        }
+
+        internal static bool IsRequestMatchHelper(HttpListenerRequest req, string handlerPath, IList<string> pathArgs, IList<string> supportedVerbs)
         {
-            if (!SupportedVerbs.Any(v => v.Equals(req.HttpMethod, StringComparison.OrdinalIgnoreCase)))
+            if (!supportedVerbs.Any(v => v.Equals(req.HttpMethod, StringComparison.OrdinalIgnoreCase)))
                 return false;
 
-            _pathArgs.Clear();
-            var comps = Path.Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries);            
-            return comps.SequenceEqual(req.Url.Segments.Skip(1).Select(item => item.Replace("/", string.Empty)), new PathEqualityComparer(_pathArgs));
+            pathArgs.Clear();
+            var comps = handlerPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            return comps.SequenceEqual(req.Url.Segments.Skip(1).Select(item => item.Replace("/", string.Empty)), new PathEqualityComparer(pathArgs));
         }
 
         sealed class PathEqualityComparer : IEqualityComparer<string>
         {
             readonly IList<string> _pathArguments;
-            //internal static PathEqualityComparer Def = new PathEqualityComparer();
+            
             internal PathEqualityComparer(IList<string> pathArguments)
             {
                 _pathArguments = pathArguments;
@@ -77,5 +83,6 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
                 return obj.GetHashCode();
             }
         }
+        #endregion Request matching
     }
 }

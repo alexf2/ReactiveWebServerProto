@@ -16,10 +16,9 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             _logger = logger;
             _gbProvider = gbProvider;
 
-            CssLinks.Add(BootStrapCss);
-            JsLinks.Add(BootStrapJs);
+            CssLinks.Add(BootStrapCss);            
             JsLinks.Add(JqueryJs);
-            JsLinks.Add(KnockoutJs);
+            JsLinks.Add(BootStrapJs);            
         }
 
         public string DisplayName => "AddMessageHandler";
@@ -45,11 +44,15 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             p.TryGetValue("msgtext", out text);
 
             if (string.IsNullOrEmpty(login))
-                rsp.Write("<p>User login should not be empty</p>");
+            {
+                rsp.Status = StatusCodes.BadRequest;
+                rsp.Write("<p>User login should not be empty</p>");                
+            }
             else
             {
                 var ui = await _gbProvider.AddMessage(login, text);
-                rsp.Write($"<p>User '{ui.UserLogin}' added message</p>");
+                rsp.Status = StatusCodes.Created;
+                rsp.Write($"<p>User '{ui.UserLogin}' added message</p>");                
             }
             rsp.Write("<div>");
         }

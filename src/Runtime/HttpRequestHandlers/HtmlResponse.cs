@@ -21,11 +21,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             _title = title;            
         }        
 
-        public override async Task Execute()
+        protected override async Task InternalExecute()
         {
-            Response.SendChunked = true;
-            AddHeaders();
-
             RenderDocumentType(Response);
             StartDoc(Response);
             RenderHeader(Response);
@@ -34,7 +31,9 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             await _execute(this);
 
             EndBody(Response);
-            EndDoc(Response);            
+            EndDoc(Response);
+
+            AddHeaders();
         }
 
         void RenderDocumentType(HttpListenerResponse rsp)

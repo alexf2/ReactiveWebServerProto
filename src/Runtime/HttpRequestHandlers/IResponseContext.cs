@@ -35,5 +35,7 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         string GetQueryParameter(string name);
         IDictionary<string, string> GetPostParameters();
         IList<string> PathArgs { get; }
+
+        void AddLink(string relativePath);
     }
 }
