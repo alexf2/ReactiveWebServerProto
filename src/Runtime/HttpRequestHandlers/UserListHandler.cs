@@ -1,11 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AnywayAnyday.GuestBook.Contract;
 using AnywayAnyday.ReactiveWebServer.Contract;
 using Castle.Core.Logging;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
-    public sealed class UserListHandler : HtmlBaseHandler, IHttpRequestHandler
+    sealed class UserListHandler : HtmlBaseHandler, IHttpRequestHandler
     {
         readonly ILogger _logger;
         readonly IGuestBookDataProvider _gbProvider;
@@ -31,21 +33,23 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
 
         protected override string PageTitle => "Users list";
 
-        protected override async Task RenderBody(ResponseBase rsp)
+        protected override IList<string> SupportedVerbs => GetVerb;
+
+        protected override async Task RenderBody (IResponseContext rsp)
         {
             rsp.Write("<div class=\"container body-content\">");
-            rsp.Write("<div class=\"clearfix\"></div>");
+            rsp.Write("<div class=\"clearfix\"></div>");                        
 
-            var page = await _gbProvider.GetUsers(1, -1);
-            if (page.Items == null)
+            var page = await _gbProvider.GetUsers(rsp.Page, rsp.Size);
+            if (!page.Items.Any())
                 rsp.Write("<p>No users found</p>");
             else
             {                
                 foreach (var u in page.Items)
                 {
-                    rsp.Write("<hr/><div class=\"row\" data-id=\"{{u.UserLogin}}\">");
+                    rsp.Write($"<hr/><div class=\"row\" data-id=\"{HtmlResponse.HtmlEncode(u.UserLogin)}\">");
                         rsp.Write($"<div class=\"col-md-1\"><b>{u.UserLogin}</b></div>");
-                        rsp.Write($"<div class=\"col-md-4\">{u.DisplayName}</div>");
+                        rsp.Write($"<div class=\"col-md-4\">{HtmlResponse.HtmlEncode(u.DisplayName)}</div>");
                     rsp.Write("</div>");
                 }
             }

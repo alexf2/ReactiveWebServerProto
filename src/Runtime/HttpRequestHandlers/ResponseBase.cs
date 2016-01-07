@@ -10,32 +10,23 @@ using System.Threading.Tasks;
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
     public abstract class ResponseBase
-    {
-        public enum StatusCodes
-        {
-            Ok = 200,
-            Created = 201,
-            NoContent = 204,
-            NotModified = 304,
-            BadRequest = 400,
-            NotFound = 404,
-            MethodNotAllowed = 405,
-            InternalServerError = 500
-        }
-
+    {        
         static readonly string ServerString = $"ReactiveWebServer/1.0 (AnywayAnyday; {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion})";
 
         readonly Dictionary<string, string> _headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { {"Server", ServerString}, {"Cache-Control", "no-cache" } };
-        readonly HttpListenerResponse _response;
+        readonly HttpListenerContext _ctx;
         long _contentSize;
-        
-        public ResponseBase(HttpListenerResponse response)
+        readonly IList<string> _pathArgs;
+
+        public ResponseBase(HttpListenerContext ctx, IList<string> pathArgs, bool keepRspMode = false)
         {
             Status = StatusCodes.Ok;
             Encoding = Encoding.UTF8;
-            _response = response;
-            _contentSize = response.ContentLength64 < 0 ? 0: response.ContentLength64;
-            response.SendChunked = false;
+            _ctx = ctx;
+            _contentSize = ctx.Response.ContentLength64 < 0 ? 0: ctx.Response.ContentLength64;
+            if (!keepRspMode)
+                ctx.Response.SendChunked = false;
+            _pathArgs = pathArgs;
         }
 
         public abstract Task Execute();
@@ -51,15 +42,41 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             _headers[ key ] = value;
         }
 
-        protected HttpListenerResponse Response => _response;
+        public HttpListenerResponse Response => _ctx.Response;
+        public HttpListenerRequest Request => _ctx.Request;
+        public IList<string> PathArgs => _pathArgs; 
+
+        public int Page
+        {
+            get
+            {
+                int p;
+                int.TryParse(_ctx.Request.QueryString["page"], out p);
+                return p < 1 ? 1:p;
+            }
+        }
+        public int Size
+        {
+            get
+            {
+                int s;
+                int.TryParse(_ctx.Request.QueryString["size"], out s);
+                return s == 0 ? -1:s;
+            }
+        }
+
+        public string GetQueryParameter(string name)
+        {
+            return _ctx.Request.QueryString[ name ];
+        }
 
         public void Write(string str)
         {
             var arr = Encoding.GetBytes(str);
             _contentSize += arr.Length;
             if (!Response.SendChunked)
-                _response.ContentLength64 = _contentSize;
-            _response.OutputStream.Write(arr, 0, arr.Length);
+                _ctx.Response.ContentLength64 = _contentSize;
+            _ctx.Response.OutputStream.Write(arr, 0, arr.Length);
         }        
 
         protected void AddHeaders()
@@ -72,11 +89,10 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
 
             //_headers["Content-Length"] = _contentSize.ToString(CultureInfo.InvariantCulture);
             //_response.ContentLength64 = _contentSize;
-            //_response.ContentEncoding = Encoding;
-            
+            //_response.ContentEncoding = Encoding;            
 
             foreach (var kv in _headers)
-                _response.AddHeader(kv.Key, kv.Value);
+                _ctx.Response.AddHeader(kv.Key, kv.Value);
         }
     }
 }

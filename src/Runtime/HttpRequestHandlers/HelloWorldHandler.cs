@@ -22,7 +22,7 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
 
         public Task<bool> HandleRequest (HttpListenerContext context)
         {
-            new TextResponse(context.Response, "Hello world!").Execute();
+            new TextResponse(context, "Hello world!").Execute();
             return Task.FromResult(true);
         }
     }

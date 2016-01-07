@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
-    public sealed class TextResponse: ResponseBase
+    public sealed class TextResponse: ResponseBase, IResponseContext
     {
         readonly string _msg;
-        public TextResponse(HttpListenerResponse response, string msg) : base(response)
+        public TextResponse(HttpListenerContext ctx, string msg, bool keepRspMode = false) : base(ctx, null, keepRspMode)
         {            
             _msg = msg;
         }

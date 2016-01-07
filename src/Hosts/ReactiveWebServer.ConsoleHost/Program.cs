@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Threading.Tasks;
 using AnywayAnyday.DataProviders.GuestBookXmlProvider;
+using AnywayAnyday.GuestBook.Contract;
 using AnywayAnyday.ReactiveWebServer.Contract;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
@@ -81,7 +82,9 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
                     stg.AddMessage("user1", "Test msg 11"),
                     stg.AddMessage("user1", "Test msg 21"),
 
-                    stg.AddMessage("user3", "Test msg 31")
+                    stg.AddMessage("user3", "Test msg 31"),
+
+                    stg.AddUser("user4", "Ivan Petrov")
                 });
 
                 var users = stg.GetUsers(1, 5).Result;

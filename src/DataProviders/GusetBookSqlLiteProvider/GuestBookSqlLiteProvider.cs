@@ -83,6 +83,9 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
             {
                 await conn.OpenAsync().ConfigureAwait(false);
 
+                if (await conn.ExecuteScalarAsync<int>("select count(*) from [User] where Login = @userLogin", new { userLogin }).ConfigureAwait(false) == 0)
+                    return new DataPage<UserMessage>(pageNumber, pageSize, 0, null); //not found
+
                 int count = await conn.ExecuteScalarAsync<int>("select count(*) from [Message] m join [User] u on m.UserId=u.UserId where u.Login = @userLogin", new {userLogin}).ConfigureAwait(false);
 
                 string q = "select u.Login as UserLogin, m.Text, m.Created from [Message] m join [User] u on m.UserId=u.UserId where u.Login = @userLogin order by m.Created";

@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
-    public sealed class HtmlResponse: ResponseBase
+    sealed class HtmlResponse: ResponseBase, IResponseContext
     {
-        readonly Func<ResponseBase, Task> _execute;
+        readonly Func<IResponseContext, Task> _execute;
         readonly IList<string> _css, _js;
-        readonly string _title;
+        readonly string _title;        
 
-        public HtmlResponse(HttpListenerResponse response, Func<ResponseBase, Task> execute, IList<string> css, IList<string> js, string title) : base(response)
+        public HtmlResponse(HttpListenerContext ctx, Func<IResponseContext, Task> execute, IList<string> css, IList<string> js, string title, IList<string> pathArgs) : base(ctx, pathArgs)
         {
             _execute = execute;
             _css = css;
             _js = js;
-            _title = title;
-        }
+            _title = title;            
+        }        
 
         public override async Task Execute()
         {

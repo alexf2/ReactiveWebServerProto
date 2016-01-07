@@ -99,14 +99,32 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
                 var doc = await GetStorage();
 
                 var usr = GetUserNode(doc, userLogin);
-                if (userLogin == null)
+                if (usr == null)
                     return new DataPage<UserMessage>(pageNumber, pageSize, 0, null); //not found
 
-                var totalCount = usr.Elements("message").Count();
+                /*var elMessage = usr.Elements("message");
+                int totalCount;
+                IEnumerable<XElement> items;
 
-                IEnumerable<XElement> items = from m in usr.Elements("message")
-                            orderby  m.Attribute("created").Value
+                if (elMessage == null)
+                {
+                    totalCount = 0;
+                    items = new XElement[0];
+                }
+                else
+                {
+                    totalCount = usr.Elements("message") == null ? 0 : usr.Elements("message").Count();
+
+                    items = from m in usr.Elements("message")
+                            orderby m.Attribute("created").Value
                             select m;
+                } */
+
+                var totalCount = usr.Elements("message") == null ? 0 : usr.Elements("message").Count();
+
+                IEnumerable<XElement>  items = from m in usr.Elements("message")
+                        orderby m.Attribute("created").Value
+                        select m;
 
                 if (pageSize != -1)
                     items = items.Skip((pageNumber - 1) * pageSize).Take(pageSize);
