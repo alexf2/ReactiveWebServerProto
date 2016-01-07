@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
-    public abstract class ResponseBase
+    public abstract class ResponseContextBase
     {        
         static readonly string ServerString = $"ReactiveWebServer/1.0 (AnywayAnyday; {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion})";
 
@@ -18,7 +19,7 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         long _contentSize;
         readonly IList<string> _pathArgs;
 
-        public ResponseBase(HttpListenerContext ctx, IList<string> pathArgs, bool keepRspMode = false)
+        public ResponseContextBase(HttpListenerContext ctx, IList<string> pathArgs, bool keepRspMode = false)
         {
             Status = StatusCodes.Ok;
             Encoding = Encoding.UTF8;
@@ -68,6 +69,28 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         public string GetQueryParameter(string name)
         {
             return _ctx.Request.QueryString[ name ];
+        }
+
+        public IDictionary<string, string> GetPostParameters()
+        {            
+            var res = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var content = string.Empty;
+            if (_ctx.Request.HasEntityBody)
+            {
+                using (var postBody = _ctx.Request.InputStream)
+                    content = new StreamReader(postBody, _ctx.Request.ContentEncoding).ReadToEnd();
+            }
+
+            foreach (string kv in content.Split('&'))
+            {
+                string[] kvPair = kv.Split('=');
+                if (kvPair.Length == 1)
+                    res.Add(WebUtility.UrlDecode(kvPair[0]), string.Empty);
+                else if (kvPair.Length == 2)
+                    res.Add(WebUtility.UrlDecode(kvPair[0]), WebUtility.UrlDecode(kvPair[1]));
+            }
+
+            return res;
         }
 
         public void Write(string str)

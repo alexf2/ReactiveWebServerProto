@@ -15,6 +15,6 @@ namespace AnywayAnyday.GuestBook.Contract
 
         Task Clear();
 
-        Task RemoveUser(string userLogin);
+        Task<int> RemoveUser(string userLogin);
     }
 }

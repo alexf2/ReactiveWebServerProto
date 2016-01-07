@@ -40,7 +40,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             rsp.Write("<div class=\"container body-content\">");
             rsp.Write("<div class=\"clearfix\"></div>");
 
-            var page = await _gbProvider.GetUserMessages(rsp.PathArgs[0], rsp.Page, rsp.Size);
+            var page = await _gbProvider.GetUserMessages(rsp.PathArgs[0], rsp.Page, rsp.Size).ConfigureAwait(false);
+
             if (page.Items == null)
                 rsp.Write($"<p>User '{HtmlResponse.HtmlEncode(rsp.PathArgs[0])}' not found</p>");
             else if (!page.Items.Any())

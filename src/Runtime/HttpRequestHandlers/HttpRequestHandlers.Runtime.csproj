@@ -44,12 +44,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddMessageHandler.cs" />
+    <Compile Include="AddUserHandler.cs" />
+    <Compile Include="AllMessagesHandler.cs" />
+    <Compile Include="ClearHandler.cs" />
+    <Compile Include="DeleteUserHandler.cs" />
     <Compile Include="HelloWorldHandler.cs" />
     <Compile Include="HtmlBaseHandler.cs" />
     <Compile Include="HtmlResponse.cs" />
     <Compile Include="IResponseContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ResponseBase.cs" />
+    <Compile Include="ResponseContextBase.cs" />
     <Compile Include="TextResponse.cs" />
     <Compile Include="UserListHandler.cs" />
     <Compile Include="UserMessagesHandler.cs" />

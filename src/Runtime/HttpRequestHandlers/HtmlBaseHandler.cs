@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
@@ -65,7 +66,7 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             {
                 if (x == "?")
                 {
-                    _pathArguments.Add(y);
+                    _pathArguments.Add(WebUtility.UrlDecode(y));
                     return true;
                 }
                 return string.Equals(x, y, StringComparison.OrdinalIgnoreCase);

@@ -129,12 +129,12 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
             }
         }
 
-        public async Task RemoveUser(string userLogin)
+        public async Task<int> RemoveUser(string userLogin)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
                 await conn.OpenAsync().ConfigureAwait(false);
-                await conn.ExecuteAsync("delete from [User] where [Login] = @userLogin", new {userLogin}).ConfigureAwait(false);
+                return await conn.ExecuteAsync("delete from [User] where [Login] = @userLogin", new {userLogin}).ConfigureAwait(false);
             }
         }
 

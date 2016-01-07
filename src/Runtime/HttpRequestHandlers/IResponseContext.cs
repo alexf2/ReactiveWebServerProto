@@ -33,6 +33,7 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         HttpListenerResponse Response { get; }
         HttpListenerRequest Request { get; }
         string GetQueryParameter(string name);
+        IDictionary<string, string> GetPostParameters();
         IList<string> PathArgs { get; }
     }
 }

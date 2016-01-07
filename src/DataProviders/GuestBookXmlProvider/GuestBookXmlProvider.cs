@@ -153,15 +153,21 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
             }
         }
 
-        public async Task RemoveUser(string userLogin)
+        public async Task<int> RemoveUser(string userLogin)
         {
             using (await _docLock.LockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
-                GetUserNode(doc, userLogin)?.Remove();                
+                var node = GetUserNode(doc, userLogin);
 
+                if(node == null)
+                    return 0;
+
+                node.Remove();
                 await SaveStorage(doc).ConfigureAwait(false);
+
+                return 1;
             }            
         }
 

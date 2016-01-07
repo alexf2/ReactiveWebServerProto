@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
-    sealed class HtmlResponse: ResponseBase, IResponseContext
+    sealed class HtmlResponse: ResponseContextBase, IResponseContext
     {
         readonly Func<IResponseContext, Task> _execute;
         readonly IList<string> _css, _js;
