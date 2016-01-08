@@ -29,7 +29,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         //http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266988.aspx
         //http://stackoverflow.com/questions/12694613/resource-locking-with-async-await
-        AsyncLock _docLock = new AsyncLock();
+        AsyncReaderWriterLock _docLock = new AsyncReaderWriterLock();
 
         public GuestBookXmlProvider (string filePath, ILogger logger)
         {
@@ -49,7 +49,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         public async Task<UserMessage> AddMessage(string userLogin, string text)
         {
-            using (await _docLock.LockAsync().ConfigureAwait(false))
+            using (await _docLock.WriterLockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
                 var user = GetUserNode(doc, userLogin, true);
@@ -65,7 +65,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         public async Task Clear()
         {
-            using (await _docLock.LockAsync().ConfigureAwait(false))
+            using (await _docLock.WriterLockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
                 doc.Root.RemoveAll();
@@ -75,7 +75,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         public async Task<UserInfo> AddUser(string userLogin, string displayName)
         {
-            using (await _docLock.LockAsync().ConfigureAwait(false))
+            using (await _docLock.WriterLockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
@@ -100,7 +100,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
         public async Task<DataPage<UserMessage>> GetUserMessages(string userLogin, int pageNumber, int pageSize)
         {
             ValidatePagination(pageNumber, pageSize);
-            using (await _docLock.LockAsync().ConfigureAwait(false))
+            using (await _docLock.ReaderLockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
@@ -124,7 +124,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
         public async Task<DataPage<UserInfo>> GetUsers(int pageNumber, int pageSize)
         {
             ValidatePagination(pageNumber, pageSize);
-            using (await _docLock.LockAsync().ConfigureAwait(false))
+            using (await _docLock.ReaderLockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
@@ -143,7 +143,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
         public async Task<int> RemoveUser(string userLogin)
         {
-            using (await _docLock.LockAsync().ConfigureAwait(false))
+            using (await _docLock.WriterLockAsync().ConfigureAwait(false))
             {
                 var doc = await GetStorage();
 
