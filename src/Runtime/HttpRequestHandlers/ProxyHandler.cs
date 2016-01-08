@@ -44,8 +44,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             {
                 context.Response.AddHeader("Access-Control-Allow-Origin", "*");
                 context.Response.AddHeader("Access-Control-Request-Method", "*");
-                context.Response.AddHeader("Access-Control-Allow-Methods", "OPTIONS, GET");
-                context.Response.AddHeader("Access-Control-Allow-Headers", "*");                
+                context.Response.AddHeader("Access-Control-Allow-Methods", "POST, OPTIONS, GET");
+                context.Response.AddHeader("Access-Control-Allow-Headers", "*");
 
                 
                 var request = (HttpWebRequest)WebRequest.Create(url);
@@ -63,7 +63,7 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
                         using (var responseStream = response.GetResponseStream())
                         {
                             context.Response.SendChunked = true;
-                            responseStream.CopyToAsync(context.Response.OutputStream);
+                            await responseStream.CopyToAsync(context.Response.OutputStream).ConfigureAwait(false);
                         }
                     }
                 }

@@ -20,7 +20,6 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
     {
         readonly string _connectionString;
         readonly ILogger _logger;
-        bool _stgCreated;
 
         public GuestBookSqlLiteProvider (string connectionString, ILogger logger)
         {
@@ -161,7 +160,8 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
                 {                    
                     conn.Execute(GetDdl());
                     conn.Execute("PRAGMA user_version = 1");
-                    _logger.Info("New SqlLite DB created");
+
+                    _logger.Info($"New SqlLite DB storage created at '{conn.FileName}'");
                 }                
             }
         }

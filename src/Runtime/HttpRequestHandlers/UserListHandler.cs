@@ -43,7 +43,9 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         protected override async Task RenderBody (IResponseContext rsp)
         {
             rsp.Write("<div class=\"container body-content\">");
-            rsp.Write("<div class=\"clearfix\"></div>");                        
+            rsp.Write("<div class=\"clearfix\"></div>");
+
+            _logger.Info($"Listing users {rsp.Page}, {rsp.Size}");
 
             var page = await _gbProvider.GetUsers(rsp.Page, rsp.Size).ConfigureAwait(false);
 

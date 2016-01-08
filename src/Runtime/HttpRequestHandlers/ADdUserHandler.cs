@@ -49,6 +49,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             p.TryGetValue("login", out login);
             p.TryGetValue("displayname", out dispName);
 
+            _logger.Info($"Adding user: {login}, {dispName}");
+
             if (string.IsNullOrEmpty(login))
             {
                 rsp.Status = StatusCodes.BadRequest;

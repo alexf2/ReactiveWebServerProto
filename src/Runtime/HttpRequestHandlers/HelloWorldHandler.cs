@@ -24,10 +24,10 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         
         public HandlerPriorityClass PriorityClass => HandlerPriorityClass.Fallback;
 
-        public Task<bool> HandleRequest (HttpListenerContext context)
+        public async Task<bool> HandleRequest (HttpListenerContext context)
         {
-            new TextResponse(context, "Hello world!").Execute();
-            return Task.FromResult(true);
+            await new TextResponse(context, "Hello world!").Execute();
+            return true;
         }
     }
 }

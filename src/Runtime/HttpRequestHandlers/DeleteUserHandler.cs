@@ -42,7 +42,9 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             rsp.Write("<div class=\"container body-content\">");
             rsp.Write("<div class=\"clearfix\"></div>");
 
-            var count = await _gbProvider.RemoveUser(rsp.PathArgs[0]).ConfigureAwait(false);
+            _logger.Info($"Deleting user: {rsp.PathArgs[0]}");
+
+            var count = await _gbProvider.RemoveUser(rsp.PathArgs[0]).ConfigureAwait(false);            
 
             if (count > 0)
                 rsp.Write($"<p>User '{HtmlResponse.HtmlEncode(rsp.PathArgs[0])}' deleted</p>");

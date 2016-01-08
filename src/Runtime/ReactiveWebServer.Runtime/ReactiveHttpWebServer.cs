@@ -4,13 +4,18 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using AnywayAnyday.HttpRequestHandlers.Runtime;
 using AnywayAnyday.ReactiveWebServer.Contract;
 using Castle.Core.Logging;
 
 namespace AnywayAnyday.ReactiveWebServer.Runtime
 {
+    /// <summary>
+    /// Represents reactive WebServer, based on observable HttpListener.
+    /// Main entry point is HandleRequest. It recieves the observable requests sequence.
+    /// We order state-less handlers in ASC order by priority. On each request we iterate them iin that order and find a one suitable handler.
+    /// This handler executes response, after that, we close context response, which sends out the data to a client.
+    /// </summary>
     public class ReactiveHttpWebServer : ServiceHostBase, IWebServer
     {
         readonly IHttpListenerObservable _listener;
@@ -74,7 +79,10 @@ namespace AnywayAnyday.ReactiveWebServer.Runtime
             {
                 try
                 {
-                    if (await handler.HandleRequest(ctx))
+                    //Finding a first suitable handler. Handlers are sorted by priority.
+                    //When a handler executes a response, it buffers all the content and collects Http headers and other parameters. 
+                    //Eventually, at the end, it copies MemoryStream to respose OutputStream. At this point Http headers are sent out.
+                    if (await handler.HandleRequest(ctx)) 
                     {
                         _logger.Info($"{handler.DisplayName} executed");
                         break;
@@ -100,7 +108,7 @@ namespace AnywayAnyday.ReactiveWebServer.Runtime
 
             try
             {                
-                ctx.Response.OutputStream.Close();
+                ctx.Response.OutputStream.Close(); //sending out the data to a client
             }
             catch (Exception ex)
             {
@@ -121,7 +129,14 @@ namespace AnywayAnyday.ReactiveWebServer.Runtime
 
         void LogRequest(HttpListenerContext ctx)
         {
-            _logger.Info($"Method: {ctx.Request.HttpMethod}; Content-type: {ctx.Request.ContentType}, Path: {ctx.Request.Url.LocalPath}, Params: {ToStr(ctx.Request.QueryString)}");
+            var msg =
+                $"New request arrived. Path: {ctx.Request.Url.LocalPath}, Verb: {ctx.Request.HttpMethod}";
+            if (ctx.Request.QueryString.Count > 0)
+                msg += $", Params: {ToStr(ctx.Request.QueryString)}";
+            if (ctx.Request.HasEntityBody)
+                msg += $", has request body {ctx.Request.ContentLength64} bytes";
+
+            _logger.Info(msg);
         }
 
         string ToStr(NameValueCollection coll)

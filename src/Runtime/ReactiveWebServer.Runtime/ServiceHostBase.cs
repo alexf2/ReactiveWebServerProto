@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AnywayAnyday.ReactiveWebServer.Contract;
 using Castle.Core.Logging;
 
 namespace AnywayAnyday.ReactiveWebServer.Runtime
 {
+    /// <summary>
+    /// A base to service hosts. Providing an implementation for basic lifecycle functionality.
+    /// </summary>
     public abstract class ServiceHostBase
     {        
         State _state = State.Initial;
         readonly ILogger _logger;
 
-        public ServiceHostBase(ILogger logger)
+        protected ServiceHostBase(ILogger logger)
         {
             _logger = logger;
         }

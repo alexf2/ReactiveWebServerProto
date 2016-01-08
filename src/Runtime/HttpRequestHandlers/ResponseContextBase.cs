@@ -111,7 +111,7 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
                     res.Add(WebUtility.UrlDecode(kvPair[0]), string.Empty);
                 else if (kvPair.Length == 2)
                     res.Add(WebUtility.UrlDecode(kvPair[0]), WebUtility.UrlDecode(kvPair[1]));
-            }
+            }            
 
             return res;
         }
@@ -135,9 +135,13 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
 
             if (!_headers["Content-Type"].Contains("charset"))
                 _headers["Content-Type"] = _headers["Content-Type"] + $"; charset={Encoding.BodyName}";
-            
+
             foreach (var kv in _headers)
+            {
+                if (string.Equals(kv.Key, "Content-Length", StringComparison.OrdinalIgnoreCase))
+                    continue;
                 _ctx.Response.AddHeader(kv.Key, kv.Value);
+            }
         }
 
     }

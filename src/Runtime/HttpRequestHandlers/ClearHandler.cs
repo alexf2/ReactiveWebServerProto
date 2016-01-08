@@ -42,6 +42,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             rsp.Write("<div class=\"container body-content\">");
             rsp.Write("<div class=\"clearfix\"></div>");
 
+            _logger.Info("Clearing the Guest Book");
+
             await _gbProvider.Clear().ConfigureAwait(false);
             rsp.Write($"<p>The book cleared</p>");            
 

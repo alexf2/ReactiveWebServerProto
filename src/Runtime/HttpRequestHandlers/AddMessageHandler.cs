@@ -48,6 +48,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
             p.TryGetValue("login", out login);
             p.TryGetValue("msgtext", out text);
 
+            _logger.Info($"Adding message: {login}, {text}");
+
             if (string.IsNullOrEmpty(login))
             {
                 rsp.Status = StatusCodes.BadRequest;

@@ -8,10 +8,10 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
     /// <summary>
     /// Surves as a base for Http handlers.
-    /// The main entry point is HandleRequest. Web server traverses all the handlers by priority and calls HandleRequest. 
-    /// It stops when some handler returns true. It means, the handler processed the request and wrote the response.
-    /// Closing the response is imposed to the WebServer. Closing causes sending out data to the client.
-    /// Http handlers are state-less objects.
+    /// The main entry point is HandleRequest. Web server traverses all the handlers, sorted by priority (PriorityClass, Priority) and calls HandleRequest. 
+    /// It stops when some handler returns true. It means, that the handler processed the request and wrote the response to Response.OutputStream.
+    /// Closing the response is imposed on the WebServer. Closing causes sending out data, including HttpHeaders and body to the client.
+    /// Http handlers are state-less objects. Each tome it creates a new ResponseContextBase derived class instance to execute the response and generate some output.
     /// </summary>
     abstract class HttpBaseHandler
     {

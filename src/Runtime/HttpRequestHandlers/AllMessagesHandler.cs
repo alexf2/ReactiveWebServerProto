@@ -46,6 +46,8 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
 
             var page = await _gbProvider.GetUsers(1, -1).ConfigureAwait(false);
 
+            _logger.Info("Returning all the Gusrst Book");
+
             if (!page.Items.Any())
                 rsp.Write("<p>No users found</p>");
             else
