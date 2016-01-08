@@ -53,7 +53,6 @@ Should be adjusted in **App.config** of `ReactiveWebServer.ConsoleHost`.
 1. **data-provider** - specifies data storage implementation. There is a couple available: Xml and SqlLite.
 
 2. **host** - host name to listen Http requests at. You may specify a mask **+** or <b>*</b> , but masks require Admin permission
-
 to run WebServer under. Or, you will have to grant your account an extra permission `netsh http add urlacl url=http://+:80/ user=DOMAIN\user`.
 3. **port** - a port to listen requests on.
 
