@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="AnywayAnyday.ReactiveWebServer.Runtime.HttpListenerObservable">
+    <Position X="1" Y="1.25" Width="2" />
+    <NestedTypes>
+      <Class Name="AnywayAnyday.ReactiveWebServer.Runtime.HttpListenerObservable.ListenerConfigurator" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>HttpListenerObservable.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAACACAAAAABAAAAAAIAACAAAIBAAAAAAAAAA=</HashCode>
+      <FileName>HttpListenerObservable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AnywayAnyday.ReactiveWebServer.Runtime.HttpListenerObservableFactory">
+    <Position X="5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>HttpListenerObservableFactory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AnywayAnyday.ReactiveWebServer.Runtime.HttpServerOptions">
+    <Position X="7.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HttpServerOptions.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AnywayAnyday.ReactiveWebServer.Runtime.ReactiveHttpWebServer">
+    <Position X="8.5" Y="3" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEQAAADAKAABAAhEQAAAAIAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>ReactiveHttpWebServer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AnywayAnyday.ReactiveWebServer.Runtime.ServiceHostBase">
+    <Position X="4.75" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAACAAAAAAABAACAAAIAAAAAAAJAAADAAAAAA=</HashCode>
+      <FileName>ServiceHostBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
