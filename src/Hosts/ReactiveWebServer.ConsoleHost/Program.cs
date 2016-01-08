@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Threading.Tasks;
 using AnywayAnyday.DataProviders.GuestBookXmlProvider;
+using AnywayAnyday.GuestBook.Contract;
 using AnywayAnyday.ReactiveWebServer.Contract;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
@@ -65,38 +66,13 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
 
             try
             {
+                //CreateTestData(container);
                 server.Start();
 
                 Console.WriteLine("Press a key>");
                 Console.ReadLine();
 
-                server.Stop();
-
-                //Test data generation
-                /*var stg = container.Resolve<IGuestBookDataProvider>();
-
-                Task.WaitAll(new Task[]
-                {
-                    stg.AddUser("user1", "Aleksey Fedorov"),
-                    stg.AddUser("user2", "Pavel Potapov"),
-                    stg.AddMessage("user2", "Test msg 1"),
-                    stg.AddMessage("user2", "Test msg 2"),
-                    stg.AddMessage("user2", "Test msg 3"),
-                    stg.AddMessage("user1", "Test msg 11"),
-                    stg.AddMessage("user1", "Test msg 21"),
-
-                    stg.AddMessage("user3", "Test msg 31"),
-
-                    stg.AddUser("user4", "Ivan Petrov")
-                });
-
-                var users = stg.GetUsers(1, 5).Result;
-                foreach (var u in users.Items)
-                    _logger.Info($"{u.UserLogin} - {u.DisplayName}");
-
-                var messages = stg.GetUserMessages("user2", 1, 5).Result;
-                foreach (var m in messages.Items)
-                    _logger.Info($"{m.Text} - {m.Created}");*/
+                server.Stop();                
             }
             finally
             {
@@ -135,6 +111,35 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
                 bool.TryParse(ConfigurationManager.AppSettings["log-inner-exception"], out need);
                 return need;
             }
+        }
+
+        static void CreateTestData(IWindsorContainer container)
+        {
+            //Test data generation
+            var stg = container.Resolve<IGuestBookDataProvider>();
+
+            Task.WaitAll(new Task[]
+            {
+                stg.AddUser("user1", "Aleksey Fedorov"),
+                stg.AddUser("user2", "Pavel Potapov"),
+                stg.AddMessage("user2", "Test msg 1"),
+                stg.AddMessage("user2", "Test msg 2"),
+                stg.AddMessage("user2", "Test msg 3"),
+                stg.AddMessage("user1", "Test msg 11"),
+                stg.AddMessage("user1", "Test msg 21"),
+
+                stg.AddMessage("user3", "Test msg 31"),
+
+                stg.AddUser("user4", "Ivan Petrov")
+            });
+
+            var users = stg.GetUsers(1, 5).Result;
+            foreach (var u in users.Items)
+                _logger.Info($"{u.UserLogin} - {u.DisplayName}");
+
+            var messages = stg.GetUserMessages("user2", 1, 5).Result;
+            foreach (var m in messages.Items)
+                _logger.Info($"{m.Text} - {m.Created}");
         }
     }
 }
