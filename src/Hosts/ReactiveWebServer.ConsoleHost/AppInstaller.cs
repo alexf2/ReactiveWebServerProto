@@ -12,6 +12,9 @@ using Castle.Windsor;
 
 namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
 {
+    /// <summary>
+    /// Castle Windsor installer. Used to configure type mappings of IoC at the composittion root.
+    /// </summary>
     public sealed class AppInstaller : IWindsorInstaller
     {        
         public void Install(IWindsorContainer container, IConfigurationStore store)

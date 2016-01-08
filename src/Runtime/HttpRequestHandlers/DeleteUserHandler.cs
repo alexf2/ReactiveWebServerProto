@@ -6,7 +6,12 @@ using Castle.Core.Logging;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
-    sealed class DeleteUserHandler : HtmlBaseHandler, IHttpRequestHandler
+    /// <summary>
+    /// Web request handlerfor http://server_domain:port/Guestbook/Users/user_login
+    /// Handles only DELETE verb. Last part of the URL is UserLogin.
+    /// Removes specified user.
+    /// </summary>
+    sealed class DeleteUserHandler : HttpBaseHandler, IHttpRequestHandler
     {
         readonly ILogger _logger;
         readonly IGuestBookDataProvider _gbProvider;

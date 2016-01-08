@@ -14,6 +14,12 @@ using Castle.Core.Logging;
 
 namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 {
+    /// <summary>
+    /// Represents data provider for the Guest Book against an XML file.
+    /// If there is no storage, then creates it automatically at the first request in the application current folder.
+    /// Keeps cached XML object model in memory by means of a weak reference.
+    /// Runs all the requests sequentially, protecting shared storage.
+    /// </summary>
     public sealed class GuestBookXmlProvider : IGuestBookDataProvider
     {
         readonly string _filePath;
@@ -100,25 +106,7 @@ namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 
                 var usr = GetUserNode(doc, userLogin);
                 if (usr == null)
-                    return new DataPage<UserMessage>(pageNumber, pageSize, 0, null); //not found
-
-                /*var elMessage = usr.Elements("message");
-                int totalCount;
-                IEnumerable<XElement> items;
-
-                if (elMessage == null)
-                {
-                    totalCount = 0;
-                    items = new XElement[0];
-                }
-                else
-                {
-                    totalCount = usr.Elements("message") == null ? 0 : usr.Elements("message").Count();
-
-                    items = from m in usr.Elements("message")
-                            orderby m.Attribute("created").Value
-                            select m;
-                } */
+                    return new DataPage<UserMessage>(pageNumber, pageSize, 0, null); //not found                
 
                 var totalCount = usr.Elements("message") == null ? 0 : usr.Elements("message").Count();
 

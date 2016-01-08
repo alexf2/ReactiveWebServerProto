@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AnywayAnyday.ReactiveWebServer.Contract
+﻿namespace AnywayAnyday.ReactiveWebServer.Contract
 {
+    /// <summary>
+    /// Configurator contract.
+    /// </summary>
     public interface IHttpListenerConfigurator
     {
         void AddPrefix(string pref);

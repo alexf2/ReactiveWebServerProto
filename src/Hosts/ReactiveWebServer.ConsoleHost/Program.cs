@@ -2,7 +2,6 @@
 using System.Configuration;
 using System.Threading.Tasks;
 using AnywayAnyday.DataProviders.GuestBookXmlProvider;
-using AnywayAnyday.GuestBook.Contract;
 using AnywayAnyday.ReactiveWebServer.Contract;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
@@ -12,6 +11,9 @@ using Configuration = Castle.Windsor.Installer.Configuration;
 
 namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
 {
+    /// <summary>
+    /// Console host main.
+    /// </summary>
     class Program
     {
         const int GenericException = -100;
@@ -70,6 +72,7 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
 
                 server.Stop();
 
+                //Test data generation
                 /*var stg = container.Resolve<IGuestBookDataProvider>();
 
                 Task.WaitAll(new Task[]
@@ -121,6 +124,9 @@ namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
                 _logger.Error(msg, ex);
         }
 
+        /// <summary>
+        /// Used with Castle Windsor Core console logger. It doesn't show inner exceptions, so, when we use this logger we have to dump them manually.
+        /// </summary>
         static bool NeedsLogInnerExc
         {
             get

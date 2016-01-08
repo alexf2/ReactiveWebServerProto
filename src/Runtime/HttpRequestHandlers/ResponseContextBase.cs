@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
+    /// <summary>
+    /// Provides base for response contexts. Main points are collecting headers, response settings and buffering data.
+    /// Response specific Html is generated in overriden InternalExecute. This implementation completes the request by writing in out to the response.
+    /// </summary>
     public abstract class ResponseContextBase
     {        
         static readonly string ServerString = $"ReactiveWebServer/1.0 (AnywayAnyday; {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion})";

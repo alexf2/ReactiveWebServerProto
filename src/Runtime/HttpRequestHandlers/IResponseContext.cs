@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
+    /// <summary>
+    /// The most common Html status codes.
+    /// </summary>
     public enum StatusCodes
     {
         Ok = 200,
@@ -17,6 +20,9 @@ namespace AnywayAnyday.HttpRequestHandlers.Runtime
         InternalServerError = 500
     }
 
+    /// <summary>
+    /// The contract for response context. Main entry points are Execute and Write.
+    /// </summary>
     interface IResponseContext
     {
         Task Execute();

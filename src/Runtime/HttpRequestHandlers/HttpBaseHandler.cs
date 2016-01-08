@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
-    abstract class HtmlBaseHandler
+    /// <summary>
+    /// Surves as a base for Http handlers.
+    /// The main entry point is HandleRequest. Web server traverses all the handlers by priority and calls HandleRequest. 
+    /// It stops when some handler returns true. It means, the handler processed the request and wrote the response.
+    /// Closing the response is imposed to the WebServer. Closing causes sending out data to the client.
+    /// Http handlers are state-less objects.
+    /// </summary>
+    abstract class HttpBaseHandler
     {
         protected const string BootStrapCss = "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css";
         protected const string BootStrapJs = "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js";

@@ -5,6 +5,10 @@ using Castle.Core.Logging;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
+    /// <summary>
+    /// The fallback handler for all not handled URLs.
+    /// Returns 200 Http code with "Hello world" body.    
+    /// </summary>
     public sealed class HelloWorldHandler : IHttpRequestHandler
     {
         readonly ILogger _logger;

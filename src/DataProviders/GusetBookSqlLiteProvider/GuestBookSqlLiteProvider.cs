@@ -10,6 +10,12 @@ using Dapper;
 
 namespace AnywayAnyday.GusetBookSqlLiteProvider
 {
+    /// <summary>
+    /// The Guest Book data provider against an SQL Lite relational data storage.
+    /// If there is no any storage, then creates it automatically at startup.
+    /// The file is placed acording to 'Data Source' in the connection string.
+    /// DB schema is loaded the from assembly resources.
+    /// </summary>
     public sealed class GuestBookSqlLiteProvider : IGuestBookDataProvider
     {
         readonly string _connectionString;
@@ -19,7 +25,7 @@ namespace AnywayAnyday.GusetBookSqlLiteProvider
         public GuestBookSqlLiteProvider (string connectionString, ILogger logger)
         {
             if (string.IsNullOrEmpty(connectionString))
-                throw new ArgumentException("The constructor parameter '{nameof(connectionString)}' is empty");
+                throw new ArgumentException($"The constructor parameter '{nameof(connectionString)}' is empty");
 
             _connectionString = connectionString;
             _logger = logger;

@@ -7,7 +7,13 @@ using Castle.Core.Logging;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
-    sealed class UserListHandler : HtmlBaseHandler, IHttpRequestHandler
+    /// <summary>
+    /// Web request handlerfor http://server_domain:port/Guestbook/Users
+    /// Handles only GET verb. Doesn't expect any parameters.
+    /// Lists all the users.    
+    /// If these parameters are omitted or size = -1, returns all the data.
+    /// </summary>
+    sealed class UserListHandler : HttpBaseHandler, IHttpRequestHandler
     {
         readonly ILogger _logger;
         readonly IGuestBookDataProvider _gbProvider;

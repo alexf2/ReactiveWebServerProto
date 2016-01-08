@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AnywayAnyday.ReactiveWebServer.Contract;
 
 namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
 {
+    /// <summary>
+    /// A helper to control console application.
+    /// </summary>
     public sealed class ConsoleAppExecutionContext : IExecutionContext, IProgress<ProgressInfo>
     {
         readonly CancellationTokenSource _cancelScr;

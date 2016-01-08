@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
+    /// <summary>
+    /// Represents a simple text response.
+    /// </summary>
     public sealed class TextResponse: ResponseContextBase, IResponseContext
     {
         readonly string _msg;

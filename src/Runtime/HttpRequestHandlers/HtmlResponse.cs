@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
+    /// <summary>
+    /// Represents a base for implemnting complex Html responses.
+    /// Subclass provides a callback to the constructor, in 'execute' parameter. This callback renders some HTML content, specific for the response.
+    /// </summary>
     sealed class HtmlResponse: ResponseContextBase, IResponseContext
     {
         readonly Func<IResponseContext, Task> _execute;

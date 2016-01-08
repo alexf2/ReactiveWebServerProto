@@ -45,7 +45,7 @@
     <Compile Include="ClearHandler.cs" />
     <Compile Include="DeleteUserHandler.cs" />
     <Compile Include="HelloWorldHandler.cs" />
-    <Compile Include="HtmlBaseHandler.cs" />
+    <Compile Include="HttpBaseHandler.cs" />
     <Compile Include="HtmlResponse.cs" />
     <Compile Include="IResponseContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

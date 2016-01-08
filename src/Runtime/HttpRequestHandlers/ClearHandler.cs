@@ -6,7 +6,12 @@ using Castle.Core.Logging;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
-    sealed class ClearHandler: HtmlBaseHandler, IHttpRequestHandler
+    /// <summary>
+    /// Web request handlerfor http://server_domain:port/Guestbook
+    /// Handles only DELETE verb. Doesn't have any parameters.
+    /// Removes all the content. Deletes users. Messages are deleted automatically by means the cascading FK.
+    /// </summary>
+    sealed class ClearHandler: HttpBaseHandler, IHttpRequestHandler
     {
         readonly ILogger _logger;
         readonly IGuestBookDataProvider _gbProvider;

@@ -3,6 +3,9 @@ using Castle.Core.Logging;
 
 namespace AnywayAnyday.ReactiveWebServer.ConsoleHost
 {
+    /// <summary>
+    /// A helper to manage named loggers, created by app. domains.
+    /// </summary>
     public sealed class LoggersManager
     {
         public const string AppLoggerInst = "AppLogger";

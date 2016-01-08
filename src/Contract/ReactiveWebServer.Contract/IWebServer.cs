@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AnywayAnyday.ReactiveWebServer.Contract
+﻿namespace AnywayAnyday.ReactiveWebServer.Contract
 {
+    /// <summary>
+    /// Http WebServer contract.
+    /// </summary>
     public interface IWebServer: IDisposableService
     {
     }

@@ -8,6 +8,9 @@ using AutoMapper;
 
 namespace AnywayAnyday.DataProviders.GuestBookXmlProvider
 {
+    /// <summary>
+    /// Castle Windsor IoC configurator. Here it is used as an assembly startup, to configure AutoMapper.
+    /// </summary>
     public sealed class AssemblyInstaller: IWindsorInstaller
     {
         public void Install (IWindsorContainer container, IConfigurationStore store)

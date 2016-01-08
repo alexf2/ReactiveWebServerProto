@@ -3,6 +3,9 @@ using AnywayAnyday.GuestBook.Contract.DTO;
 
 namespace AnywayAnyday.GuestBook.Contract
 {
+    /// <summary>
+    /// Defines the contract for Guest Book data.
+    /// </summary>
     public interface IGuestBookDataProvider
     {
         Task<DataPage<UserInfo>> GetUsers(int pageNumber, int pageSize);

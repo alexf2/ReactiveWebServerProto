@@ -7,7 +7,12 @@ using Castle.Core.Logging;
 
 namespace AnywayAnyday.HttpRequestHandlers.Runtime
 {
-    sealed class AddUserHandler : HtmlBaseHandler, IHttpRequestHandler
+    /// <summary>
+    /// Web request handlerfor http://server_domain:port/Guestbook/Users
+    /// Handles only POST verb. Expects two query body parameters: login and displayname.
+    /// Creates new user.
+    /// </summary>
+    sealed class AddUserHandler : HttpBaseHandler, IHttpRequestHandler
     {
         readonly ILogger _logger;
         readonly IGuestBookDataProvider _gbProvider;

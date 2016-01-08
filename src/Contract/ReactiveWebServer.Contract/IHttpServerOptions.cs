@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 
 namespace AnywayAnyday.ReactiveWebServer.Contract
 {
+    /// <summary>
+    /// Server settings.
+    /// </summary>
     public interface IHttpServerOptions
     {        
         IList<Endpoint> Endpoints { get; }
